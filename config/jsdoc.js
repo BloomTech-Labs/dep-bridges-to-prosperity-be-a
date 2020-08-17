@@ -21,6 +21,10 @@ module.exports = {
         description: 'Operations for profile',
       },
       {
+        name: 'bridge',
+        description: 'Operations for bridge',
+      },
+      {
         name: 'data',
         description: 'Operations for data science service',
       },
@@ -43,6 +47,9 @@ module.exports = {
         },
         BadRequest: {
           description: 'Bad request. profile already exists',
+        },
+        InternalSeverError: {
+          description: 'Something went wrong with the server 💀',
         },
         NotFound: {
           description: 'Not Found',
