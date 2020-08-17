@@ -13,7 +13,7 @@ route.get('/all', (req, res) => {
       res.status(200).json(bridges);
     })
     .catch((err) => {
-      rse.status(500).json(err.message);
+      res.status(500).json(err.message);
     });
 });
 
