@@ -14,6 +14,7 @@ if (process.env.NODE_ENV != 'production' && config_result.error) {
 }
 
 const swaggerSpec = swaggerJSDoc(jsdocConfig);
+
 const swaggerUIOptions = {
   explorer: true,
 };

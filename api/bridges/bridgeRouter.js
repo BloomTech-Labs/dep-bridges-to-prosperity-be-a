@@ -1,11 +1,11 @@
 const express = require('express');
-const authRequired = require('../middleware/authRequired');
+// const authRequired = require('../middleware/authRequired');
 const Bridges = require('./bridgeModal');
 const { validateId, validateValues } = require('../middleware/authMiddleware');
 
 const route = express.Router();
 
-// [bridge, bridges]/
+// [bridge, bridges]/all
 //This returns all bridges
 route.get('/all', (req, res) => {
   Bridges.find()
@@ -23,13 +23,15 @@ route.post('/add', validateValues, (req, res) => {
   const body = req.body;
 
   Bridges.add(body)
-    .then((id) => {
+    .then(() => {
       res.status(201).json({ message: 'bridge added successfully.' });
     })
     .catch((err) => {
       res.status(500).json(err.message);
     });
 });
+
+//[bridge, bridges]/:id
 //returns bridge by id - middleware checks if id is valid
 route.get('/:id', validateId, (req, res) => {
   const id = req.params.id;
@@ -42,6 +44,7 @@ route.get('/:id', validateId, (req, res) => {
     });
 });
 
+// [bridge, bridges]/:id
 // updates the bridge by id - middleware checks if id is valid
 route.patch('/:id', validateId, (req, res) => {
   const id = req.params.id;
@@ -55,12 +58,13 @@ route.patch('/:id', validateId, (req, res) => {
     });
 });
 
+// /[bridge, bridges]/:id
 //Deletes bridge by given id - middleware checks if id is valid
 route.delete('/:id', validateId, (req, res) => {
   const id = req.params.id;
 
   Bridges.remove(id)
-    .then((count) => {
+    .then(() => {
       res.status(200).json({ message: 'Bridge Deleted' });
     })
     .catch((err) => {
@@ -69,5 +73,3 @@ route.delete('/:id', validateId, (req, res) => {
 });
 
 module.exports = route;
-
-// 1014143433
