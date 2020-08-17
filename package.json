@@ -6,11 +6,12 @@
   "repository": "github:Lambda-School-Labs/labs-api-starter",
   "scripts": {
     "start": "node server.js",
-    "watch:dev": "nodemon",
+    "dev": "nodemon",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",
     "format": "npx prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md)\"",
     "knex": "npx knex --knexfile config/knexfile.js",
+    "knex-refresh": "npx knex migrate:latest && npx knex migrate:latest && npx knex seed:run",
     "tests": "npx jest --forceExit",
     "coverage": "CI=true npx jest --coverage --detectOpenHandles --forceExit"
   },
