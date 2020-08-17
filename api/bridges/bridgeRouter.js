@@ -5,9 +5,6 @@ const { validateId, validateValues } = require('../middleware/authMiddleware');
 
 const route = express.Router();
 
-// [bridge, bridges]/all
-//This returns all bridges
-
 /**
  * @swagger
  * components:
@@ -30,10 +27,15 @@ const route = express.Router();
  *          type: string
  *          description: public url of profile avatar
  *      example:
- *        id: '00uhjfrwdWAQvD8JV4x6'
- *        email: 'frank@example.com'
- *        name: 'Frank Martinez'
- *        avatarUrl: 'https://s3.amazonaws.com/uifaces/faces/twitter/hermanobrother/128.jpg'
+ *        id: 23243222
+ *        name: 'Buzi'
+ *        type: 'Suspended'
+ *        stage: 'Rejected'
+ *        subStage: 'Technical'
+ *        individualsDirectlyServed: 0.0
+ *        span: 0.0
+ *        latitude: -2.42056
+ *        longitude: 28.9662
  *
  * /bridges/all:
  *  get:
@@ -51,11 +53,15 @@ const route = express.Router();
  *              items:
  *                $ref: '#/components/schemas/Bridges'
  *              example:
- *                - id: '00uhjfrwdWAQvD8JV4x6'
+ *                - id: 23243222
  *                  name: 'Buzi'
  *                  type: 'Suspended'
  *                  stage: 'Rejected'
  *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
  *      500:
  *        $ref: '#/components/responses/InternalSeverError'
  */
@@ -69,49 +75,170 @@ route.get('/all', (req, res) => {
     });
 });
 
-// /[bridge, bridges]/add
-//Adds bridge/s and checks if all values are passed by user(checked by middleware)
+/**
+ * @swagger
+ *
+ * /bridges:
+ *  post:
+ *    summary: Add new bridge
+ *    tags:
+ *      - bridge
+ *    requestBody:
+ *      description: Data require to add a new bridge
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Bridges'
+ *    responses:
+ *      500:
+ *        $ref: '#/components/responses/InternalServerError'
+ *      201:
+ *        description: Successfull Message
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: A message about the result
+ *                  example: Bridge added successfully.
+ */
 route.post('/add', validateValues, (req, res) => {
   const body = req.body;
-
   Bridges.add(body)
     .then(() => {
-      res.status(201).json({ message: 'bridge added successfully.' });
+      res.status(201).json({ message: 'Bridge added successfully.' });
     })
-    .catch((err) => {
-      res.status(500).json(err.message);
+    .catch(() => {
+      res.status(500).json({ message: 'Bridge with that ID already exists' });
     });
 });
 
-//[bridge, bridges]/:id
-//returns bridge by id - middleware checks if id is valid
+/**
+ * @swagger
+ * components:
+ *  parameters:
+ *      bridgeId:
+ *        name: id
+ *        in: path
+ *        description: ID of the bridge to return
+ *        required: true
+ *        example: 1014107
+ *        schema:
+ *          type: number
+ *
+ * /bridges/{id}:
+ *  get:
+ *    description: Find bridge by ID
+ *    summary: Returns a single bridge
+ *    tags:
+ *      - bridge
+ *    parameters:
+ *      - $ref: '#/components/parameters/bridgeId'
+ *    responses:
+ *      200:
+ *        description: A bridge object
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/Bridges'
+ *      404:
+ *        description: 'Bridge not found'
+ */
+
 route.get('/:id', validateId, (req, res) => {
   const id = req.params.id;
   Bridges.findById(id)
     .then((id) => {
       res.status(200).json(id);
     })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
+    .catch(() => {
+      res.status(500).json({ message: 'Could not get a bridge with that ID' });
     });
 });
-
-// [bridge, bridges]/:id
-// updates the bridge by id - middleware checks if id is valid
+/**
+ * @swagger
+ * components:
+ *  parameters:
+ *      bridgeId:
+ *        name: id
+ *        in: path
+ *        description: ID of the bridge to return
+ *        required: true
+ *        example: 1014107
+ *        schema:
+ *          type: number
+ *
+ * /bridges/{id}:
+ *  patch:
+ *    description: Edit bridge by ID
+ *    summary: Returns updated bridge
+ *    tags:
+ *      - bridge
+ *    parameters:
+ *      - $ref: '#/components/parameters/bridgeId'
+ *    responses:
+ *      200:
+ *        description: Message
+ *        content:
+ *          application/json:
+ *            schema:
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: A message about the result
+ *                  example: Bridge edited successfully.
+ *      404:
+ *        description: 'Bridge not found'
+ */
 route.patch('/:id', validateId, (req, res) => {
   const id = req.params.id;
   const changes = req.body;
   Bridges.update(id, changes)
-    .then((count) => {
-      res.status(201).json({ data: count });
+    .then(() => {
+      res.status(201).json({ message: 'Bridge updated successfully' });
     })
     .catch((err) => {
       res.status(500).json({ message: err.message });
     });
 });
 
-// /[bridge, bridges]/:id
-//Deletes bridge by given id - middleware checks if id is valid
+/**
+ * @swagger
+ * components:
+ *  parameters:
+ *      bridgeId:
+ *        name: id
+ *        in: path
+ *        description: ID of the bridge to return
+ *        required: true
+ *        example: 1014107
+ *        schema:
+ *          type: number
+ *
+ * /bridges/{id}:
+ *  delete:
+ *    description: Delete bridge by ID
+ *    summary: Returns a message
+ *    tags:
+ *      - bridge
+ *    parameters:
+ *      - $ref: '#/components/parameters/bridgeId'
+ *    responses:
+ *      200:
+ *        description: Message
+ *        content:
+ *          application/json:
+ *            schema:
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: A message about the result
+ *                  example: Bridge deleted successfully.
+ *      404:
+ *        description: 'Bridge not found'
+ */
 route.delete('/:id', validateId, (req, res) => {
   const id = req.params.id;
 
