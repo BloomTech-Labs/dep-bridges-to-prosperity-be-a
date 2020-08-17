@@ -42,8 +42,8 @@ function validateValues(req, res, next) {
     !type ||
     !stage ||
     !subStage ||
-    !individualsDirectlyServed ||
-    !span ||
+    !typeof individualsDirectlyServed === 'number' ||
+    !typeof span === 'number' ||
     !latitude ||
     !longitude
   ) {
