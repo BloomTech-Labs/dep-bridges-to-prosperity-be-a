@@ -7,6 +7,58 @@ const route = express.Router();
 
 // [bridge, bridges]/all
 //This returns all bridges
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    Bridges:
+ *      type: object
+ *      required:
+ *        - id
+ *        - name
+ *        - stage
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: This is a foreign key (the okta user ID)
+ *        email:
+ *          type: string
+ *        name:
+ *          type: string
+ *        avatarUrl:
+ *          type: string
+ *          description: public url of profile avatar
+ *      example:
+ *        id: '00uhjfrwdWAQvD8JV4x6'
+ *        email: 'frank@example.com'
+ *        name: 'Frank Martinez'
+ *        avatarUrl: 'https://s3.amazonaws.com/uifaces/faces/twitter/hermanobrother/128.jpg'
+ *
+ * /bridges/all:
+ *  get:
+ *    description: Returns a list of bridges
+ *    summary: Get a list of all bridges
+ *    tags:
+ *      - bridge
+ *    responses:
+ *      200:
+ *        description: array of bridges
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Bridges'
+ *              example:
+ *                - id: '00uhjfrwdWAQvD8JV4x6'
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *      500:
+ *        $ref: '#/components/responses/InternalSeverError'
+ */
 route.get('/all', (req, res) => {
   Bridges.find()
     .then((bridges) => {
