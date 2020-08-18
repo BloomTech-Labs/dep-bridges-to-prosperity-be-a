@@ -93,16 +93,21 @@ route.get('/all', (req, res) => {
  *      500:
  *        $ref: '#/components/responses/InternalServerError'
  *      201:
- *        description: Successfull Message
+ *        description: Added bridge site object.
  *        content:
  *          application/json:
  *            schema:
  *              type: object
- *              properties:
- *                message:
- *                  type: string
- *                  description: A message about the result
- *                  example: Bridge added successfully.
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
  */
 route.post('/add', validateValues, async (req, res) => {
   const body = req.body;
@@ -181,17 +186,29 @@ route.get('/:id', validateId, (req, res) => {
  *      - bridge
  *    parameters:
  *      - $ref: '#/components/parameters/bridgeId'
+ *    requestBody:
+ *      description: Data require to add a new bridge
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Bridges'
  *    responses:
  *      200:
  *        description: Message
  *        content:
  *          application/json:
  *            schema:
- *              properties:
- *                message:
- *                  type: string
- *                  description: A message about the result
- *                  example: Bridge edited successfully.
+ *              type: object
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
  *      404:
  *        description: 'Bridge not found'
  */
