@@ -78,7 +78,7 @@ route.get('/all', (req, res) => {
 /**
  * @swagger
  *
- * /bridges:
+ * /bridges/add:
  *  post:
  *    summary: Add new bridge
  *    tags:
@@ -104,15 +104,18 @@ route.get('/all', (req, res) => {
  *                  description: A message about the result
  *                  example: Bridge added successfully.
  */
-route.post('/add', validateValues, (req, res) => {
+route.post('/add', validateValues, async (req, res) => {
   const body = req.body;
-  Bridges.add(body)
-    .then(() => {
-      res.status(201).json({ message: 'Bridge added successfully.' });
-    })
-    .catch(() => {
-      res.status(500).json({ message: 'Bridge with that ID already exists' });
+  try {
+    const newBridge = await Bridges.add(body);
+    if (!newBridge)
+      res.status(400).json({ message: 'Bridge with that id already exists' });
+    res.status(201).json(newBridge[0]);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
     });
+  }
 });
 
 /**
@@ -192,16 +195,16 @@ route.get('/:id', validateId, (req, res) => {
  *      404:
  *        description: 'Bridge not found'
  */
-route.patch('/:id', validateId, (req, res) => {
+route.patch('/:id', validateId, async (req, res) => {
   const id = req.params.id;
   const changes = req.body;
-  Bridges.update(id, changes)
-    .then(() => {
-      res.status(201).json({ message: 'Bridge updated successfully' });
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+  try {
+    const editBridge = await Bridges.update(id, changes);
+    if (!editBridge) res.status(404).json({ message: 'ID not found' });
+    res.status(201).json(editBridge[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /**
