@@ -8,8 +8,8 @@ module.exports = {
   remove,
 };
 // adds a bridge
-function add(bridge) {
-  return db('bridges').insert(bridge, 'id');
+async function add(bridge) {
+  return await db('bridges').insert(bridge, 'id').returning('*');
 }
 //returns all bridges with all values
 function find() {
@@ -26,8 +26,8 @@ function findById(id) {
 }
 
 //updates bridge using given id
-function update(id, changes) {
-  return db('bridges').where({ id }).update(changes);
+async function update(id, changes) {
+  return await db('bridges').where({ id }).update(changes).returning('*');
 }
 
 //removes bridge using given id
