@@ -78,7 +78,7 @@ route.get('/all', (req, res) => {
 /**
  * @swagger
  *
- * /bridges:
+ * /bridges/add:
  *  post:
  *    summary: Add new bridge
  *    tags:
@@ -93,26 +93,34 @@ route.get('/all', (req, res) => {
  *      500:
  *        $ref: '#/components/responses/InternalServerError'
  *      201:
- *        description: Successfull Message
+ *        description: Added bridge site object.
  *        content:
  *          application/json:
  *            schema:
  *              type: object
- *              properties:
- *                message:
- *                  type: string
- *                  description: A message about the result
- *                  example: Bridge added successfully.
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
  */
-route.post('/add', validateValues, (req, res) => {
+route.post('/add', validateValues, async (req, res) => {
   const body = req.body;
-  Bridges.add(body)
-    .then(() => {
-      res.status(201).json({ message: 'Bridge added successfully.' });
-    })
-    .catch(() => {
-      res.status(500).json({ message: 'Bridge with that ID already exists' });
+  try {
+    const newBridge = await Bridges.add(body);
+    if (!newBridge)
+      res.status(400).json({ message: 'Bridge with that id already exists' });
+    res.status(201).json(newBridge[0]);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
     });
+  }
 });
 
 /**
@@ -178,30 +186,42 @@ route.get('/:id', validateId, (req, res) => {
  *      - bridge
  *    parameters:
  *      - $ref: '#/components/parameters/bridgeId'
+ *    requestBody:
+ *      description: Data require to add a new bridge
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Bridges'
  *    responses:
  *      200:
  *        description: Message
  *        content:
  *          application/json:
  *            schema:
- *              properties:
- *                message:
- *                  type: string
- *                  description: A message about the result
- *                  example: Bridge edited successfully.
+ *              type: object
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
  *      404:
  *        description: 'Bridge not found'
  */
-route.patch('/:id', validateId, (req, res) => {
+route.patch('/:id', validateId, async (req, res) => {
   const id = req.params.id;
   const changes = req.body;
-  Bridges.update(id, changes)
-    .then(() => {
-      res.status(201).json({ message: 'Bridge updated successfully' });
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+  try {
+    const editBridge = await Bridges.update(id, changes);
+    if (!editBridge) res.status(404).json({ message: 'ID not found' });
+    res.status(201).json(editBridge[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 /**
