@@ -1,5 +1,5 @@
 const express = require('express');
-// const authRequired = require('../middleware/authRequired');
+const authRequired = require('../middleware/authRequired');
 const Bridges = require('./bridgeModal');
 const { validateId, validateValues } = require('../middleware/authMiddleware');
 
@@ -65,7 +65,7 @@ const route = express.Router();
  *      500:
  *        $ref: '#/components/responses/InternalSeverError'
  */
-route.get('/all', (req, res) => {
+route.get('/all', authRequired, (req, res) => {
   Bridges.find()
     .then((bridges) => {
       res.status(200).json(bridges);
@@ -109,7 +109,7 @@ route.get('/all', (req, res) => {
  *                  latitude: -2.42056
  *                  longitude: 28.9662
  */
-route.post('/add', validateValues, async (req, res) => {
+route.post('/add', validateValues, authRequired, async (req, res) => {
   const body = req.body;
   try {
     const newBridge = await Bridges.add(body);
@@ -155,14 +155,14 @@ route.post('/add', validateValues, async (req, res) => {
  *        description: 'Bridge not found'
  */
 
-route.get('/:id', validateId, (req, res) => {
+route.get('/:id', validateId, authRequired, (req, res) => {
   const id = req.params.id;
   Bridges.findById(id)
     .then((id) => {
       res.status(200).json(id);
     })
-    .catch(() => {
-      res.status(500).json({ message: 'Could not get a bridge with that ID' });
+    .catch((err) => {
+      res.status(500).json(err.message);
     });
 });
 /**
@@ -212,7 +212,7 @@ route.get('/:id', validateId, (req, res) => {
  *      404:
  *        description: 'Bridge not found'
  */
-route.patch('/:id', validateId, async (req, res) => {
+route.patch('/:id', validateId, authRequired, async (req, res) => {
   const id = req.params.id;
   const changes = req.body;
   try {
@@ -259,7 +259,7 @@ route.patch('/:id', validateId, async (req, res) => {
  *      404:
  *        description: 'Bridge not found'
  */
-route.delete('/:id', validateId, (req, res) => {
+route.delete('/:id', validateId, authRequired, (req, res) => {
   const id = req.params.id;
 
   Bridges.remove(id)
