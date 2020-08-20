@@ -4,6 +4,7 @@ const Bridges = require('./bridgeModal');
 const { validateId, validateValues } = require('../middleware/authMiddleware');
 
 const route = express.Router();
+const db = require('../../data/db-config');
 
 /**
  * @swagger
@@ -77,6 +78,86 @@ route.get('/all', (req, res) => {
 
 /**
  * @swagger
+ * components:
+ *  schemas:
+ *    Bridges:
+ *      type: object
+ *      required:
+ *        - id
+ *        - name
+ *        - stage
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: This is a foreign key (the okta user ID)
+ *        email:
+ *          type: string
+ *        name:
+ *          type: string
+ *        avatarUrl:
+ *          type: string
+ *          description: public url of profile avatar
+ *      example:
+ *        id: 23243222
+ *        name: 'Buzi'
+ *        type: 'Suspended'
+ *        stage: 'Rejected'
+ *        subStage: 'Technical'
+ *        individualsDirectlyServed: 0.0
+ *        span: 0.0
+ *        latitude: -2.42056
+ *        longitude: 28.9662
+ *
+ * /bridges/search:
+ *  get:
+ *    description: Returns a list of bridges
+ *    summary: Searches through the list of all bridges
+ *    tags:
+ *      - bridge
+ *    responses:
+ *      200:
+ *        description: array of bridges
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Bridges'
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
+ *      500:
+ *        $ref: '#/components/responses/InternalSeverError'
+ */
+route.post('/search', async (req, res) => {
+  const search = req.body.search.toLowerCase();
+  try {
+    const bridges = await db('bridges')
+      .select('*')
+      .whereRaw(`LOWER(name) LIKE ?`, [`%${search}%`]);
+    res.status(200).json(bridges);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+
+  // Bridges.find()
+  //   .then((bridges) => {
+  //     res.status(200).json(bridges);
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).json(err.message);
+  //   });
+});
+
+/**
+ * @swagger
  *
  * /bridges/add:
  *  post:
@@ -113,11 +194,9 @@ route.post('/add', validateValues, async (req, res) => {
   const body = req.body;
   try {
     const newBridge = await Bridges.add(body);
-    if (!newBridge)
-      res.status(400).json({ message: 'Bridge with that id already exists' });
-    res.status(201).json(newBridge[0]);
+    res.status(201).json(newBridge);
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       message: err.message,
     });
   }
