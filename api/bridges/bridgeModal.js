@@ -9,7 +9,8 @@ module.exports = {
 };
 // adds a bridge
 async function add(bridge) {
-  return await db('bridges').insert(bridge, 'id').returning('*');
+  const bridgeSite = await db('bridges').insert(bridge, 'id').returning('*');
+  return bridgeSite[0];
 }
 //returns all bridges with all values
 function find() {
