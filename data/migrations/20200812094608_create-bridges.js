@@ -1,6 +1,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable('bridges', (table) => {
-    table.integer('id').unique().primary();
+    table.increments();
+    table.integer('projectCode').unique().notNullable();
     table.string('name', 255).notNullable();
     table.string('type', 255).notNullable();
     table.string('stage', 255).notNullable();
@@ -9,6 +10,13 @@ exports.up = function (knex) {
     table.float('span').notNullable();
     table.float('latitude').notNullable();
     table.float('longitude').notNullable();
+    table.string('country', 255).notNullable();
+    table.string('province', 255).notNullable();
+    table.string('sector', 255).notNullable();
+    table.string('cell', 255).notNullable();
+    table.string('formName', 255).notNullable();
+    table.string('caseSafeIdForm', 255).notNullable();
+    table.string('bridgeOpportunityId', 255).notNullable();
   });
 };
 
