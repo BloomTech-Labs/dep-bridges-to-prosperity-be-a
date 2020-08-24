@@ -234,7 +234,7 @@ route.post('/add', validateValues, authRequired, async (req, res) => {
  *        description: 'Bridge not found'
  */
 
-route.get('/:id', validateId, authRequired, (req, res) => {
+route.get('/:id', validateId, (req, res) => {
   const id = req.params.id;
   Bridges.findById(id)
     .then((id) => {

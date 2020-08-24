@@ -18,7 +18,6 @@ exports.seed = function (knex) {
         { bridge_id: 2, village_id: 11 },
         { bridge_id: 2, village_id: 12 },
         { bridge_id: 4, village_id: 13 },
-        { bridge_id: 4, village_id: 13 },
         { bridge_id: 4, village_id: 15 },
         { bridge_id: 4, village_id: 16 },
         { bridge_id: 3, village_id: 17 },
