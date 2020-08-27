@@ -19,7 +19,7 @@ async function find() {
   return Promise.all(
     bridges.map(async (bridge) => ({
       ...bridge,
-      communitiesServed: await db('communities_served as c')
+      communities_served: await db('communities_served as c')
         .where({ 'c.bridge_id': bridge.id })
         .join('villages as v', 'c.village_id', 'v.id'),
     }))
@@ -34,11 +34,11 @@ function findBy(filter) {
 //returns bridges by id filter. returns the whole object
 async function findById(id) {
   const bridge = await db('bridges').where({ id }).first();
-  const communitiesServed = await db('communities_served as co')
+  const communities_served = await db('communities_served as co')
     .join('villages as v', 'co.village_id', 'v.id')
     .where('co.bridge_id', id)
     .select('v.*');
-  return await db('bridges').where({ id }).update(changes).returning('*');
+  return { ...bridge, communities_served };
 }
 
 function update(id, changes) {
