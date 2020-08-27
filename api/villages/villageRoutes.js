@@ -1,10 +1,4 @@
 const express = require('express');
-//We need to be able to CRUD operations on villages.
-//need auths
-//need middleware
-//need docs
-//need db
-// const authRequired = require('../middleware/authRequired');
 const { validateId, validateValues } = require('./villageMiddleware');
 const route = express.Router();
 const Villages = require('./villageModel');

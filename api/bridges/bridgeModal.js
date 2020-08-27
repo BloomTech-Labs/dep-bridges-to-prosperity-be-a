@@ -6,7 +6,6 @@ module.exports = {
   findById,
   update,
   remove,
-  testFunc,
 };
 // adds a bridge
 async function add(bridge) {
@@ -27,13 +26,6 @@ async function find() {
   );
 }
 
-//returns object array of communities served
-function testFunc(bridge_id) {
-  return db('communities_served as c')
-    .where({ bridge_id })
-    .join('villages as v', 'c.village_id', 'v.id');
-}
-
 //find using filter
 function findBy(filter) {
   return db('bridges').where(filter);
@@ -44,13 +36,13 @@ async function findById(id) {
   const bridge = await db('bridges').where({ id }).first();
   const communitiesServed = await db('communities_served as co')
     .join('villages as v', 'co.village_id', 'v.id')
-    .where('co.bridge_id', id);
-  return { ...bridge, communitiesServed };
+    .where('co.bridge_id', id)
+    .select('v.*');
+  return await db('bridges').where({ id }).update(changes).returning('*');
 }
 
-//updates bridge using given id
-async function update(id, changes) {
-  return await db('bridges').where({ id }).update(changes).returning('*');
+function update(id, changes) {
+  return db('bridges').where({ id }).update(changes).returning('*');
 }
 
 //removes bridge using given id
