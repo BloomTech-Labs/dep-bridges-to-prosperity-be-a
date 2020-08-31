@@ -1,8 +1,6 @@
 const express = require('express');
 const authRequired = require('../middleware/authRequired');
 const Profiles = require('./profileModel');
-const Bridge = require('../bridges/bridgeModal');
-const db = require('../../data/db-config');
 
 const router = express.Router();
 

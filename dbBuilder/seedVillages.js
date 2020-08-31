@@ -34,15 +34,14 @@ async function fetchVillage() {
   let newObj = {};
   //Looping through the object recieved which was an object not an array
   for (let key in data) {
-    if (data.hasOwnProperty(key)) {
-      let newData = data[key];
-      for (let newKey in newData) {
-        //Database is expecting lower case chars. So looping again to change key chars.
-        test = newKey.toLowerCase(); //keys
-        let values = newData[newKey];
-        newObj[test] = values;
-      }
+    let newData = data[key];
+    for (let newKey in newData) {
+      //Database is expecting lower case chars. So looping again to change key chars.
+      test = newKey.toLowerCase(); //keys
+      let values = newData[newKey];
+      newObj[test] = values;
     }
+
     //destructuring the data recieved from DS
     const {
       vill_id,

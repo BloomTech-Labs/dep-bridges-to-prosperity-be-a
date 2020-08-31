@@ -24,16 +24,15 @@ async function fetchBridges() {
   let newObj = {};
   //Looping through the object recieved which was an object not an array
   for (let key in data) {
-    if (data.hasOwnProperty(key)) {
-      let newData = data[key];
-      for (let newKey in newData) {
-        //Database is expecting lower case chars.
-        //So looping again to change key chars and remove empty space and to lower case
-        test = newKey.toLowerCase().split(' ').join('');
-        let values = newData[newKey];
-        newObj[test] = values;
-      }
+    let newData = data[key];
+    for (let newKey in newData) {
+      //Database is expecting lower case chars.
+      //So looping again to change key chars and remove empty space and to lower case
+      test = newKey.toLowerCase().split(' ').join('');
+      let values = newData[newKey];
+      newObj[test] = values;
     }
+
     //Creating variable to allow to override the keys
     const sub_stage = newObj['projectsub-stage'];
     const span = newObj['span(m)'];
