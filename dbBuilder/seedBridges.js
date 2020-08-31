@@ -1,6 +1,7 @@
 const db = require('../data/db-config.js');
 const Bridge = require('../api/bridges/bridgeModal');
 const fetch = require('node-fetch');
+
 //This function will rollback and migrate latest and run the village function first
 async function main() {
   try {
@@ -15,7 +16,7 @@ main();
 // function to fetch data for bridges passed into the main function
 async function fetchBridges() {
   const url = await fetch(
-    'http://bridges-to-presperity-08252020.eba-8gqnftg9.us-east-1.elasticbeanstalk.com/sites'
+    'http://bridges-to-presperity-08272020.eba-3nqy3zpc.us-east-1.elasticbeanstalk.com/sites'
   );
   const data = await url.json();
 
@@ -23,8 +24,8 @@ async function fetchBridges() {
   let update = {};
   let newObj = {};
   //Looping through the object recieved which was an object not an array
-  for (let key in data) {
-    let newData = data[key];
+  for (let i = 0; i < data.length; i++) {
+    let newData = data[i];
     for (let newKey in newData) {
       //Database is expecting lower case chars.
       //So looping again to change key chars and remove empty space and to lower case
