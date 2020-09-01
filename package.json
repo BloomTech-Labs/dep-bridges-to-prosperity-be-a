@@ -5,8 +5,10 @@
   "license": "MIT",
   "repository": "github:Lambda-School-Labs/labs-api-starter",
   "scripts": {
+    "seed-villages": "node ./dbBuilder/seedVillages.js",
     "start": "node server.js",
     "dev": "nodemon",
+    "seed-bridges": "node ./dbBuilder/seedBridges.js",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",
     "format": "npx prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|md)\"",
@@ -51,6 +53,7 @@
     "http-errors": "~1.6.3",
     "knex": "^0.21.1",
     "morgan": "~1.9.1",
+    "node-fetch": "^2.6.0",
     "pg": "^8.2.1",
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4"

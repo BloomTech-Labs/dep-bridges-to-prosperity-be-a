@@ -25,6 +25,10 @@ module.exports = {
         description: 'Operations for bridge',
       },
       {
+        name: 'village',
+        description: 'Operations for village',
+      },
+      {
         name: 'data',
         description: 'Operations for data science service',
       },

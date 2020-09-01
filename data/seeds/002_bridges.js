@@ -11,7 +11,7 @@ exports.seed = function (knex) {
           type: 'Suspended',
           stage: 'Rejected',
           subStage: 'Technical',
-          individualsDirectlyServed: 0.0,
+          individuals_directly_served: 0.0,
           span: 0.0,
           latitude: -2.42056,
           longitude: 28.9662,

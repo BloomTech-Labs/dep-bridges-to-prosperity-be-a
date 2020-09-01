@@ -69,6 +69,7 @@ const db = require('../../data/db-config');
 route.get('/all', (req, res) => {
   Bridges.find()
     .then((bridges) => {
+      console.log('length ', bridges.length);
       res.status(200).json(bridges);
     })
     .catch((err) => {

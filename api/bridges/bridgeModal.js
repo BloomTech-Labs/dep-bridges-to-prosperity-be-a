@@ -6,7 +6,6 @@ module.exports = {
   findById,
   update,
   remove,
-  testFunc,
 };
 // adds a bridge
 async function add(bridge) {
@@ -20,18 +19,11 @@ async function find() {
   return Promise.all(
     bridges.map(async (bridge) => ({
       ...bridge,
-      communitiesServed: await db('communities_served as c')
+      communities_served: await db('communities_served as c')
         .where({ 'c.bridge_id': bridge.id })
         .join('villages as v', 'c.village_id', 'v.id'),
     }))
   );
-}
-
-//returns object array of communities served
-function testFunc(bridge_id) {
-  return db('communities_served as c')
-    .where({ bridge_id })
-    .join('villages as v', 'c.village_id', 'v.id');
 }
 
 //find using filter
@@ -42,15 +34,15 @@ function findBy(filter) {
 //returns bridges by id filter. returns the whole object
 async function findById(id) {
   const bridge = await db('bridges').where({ id }).first();
-  const communitiesServed = await db('communities_served as co')
+  const communities_served = await db('communities_served as co')
     .join('villages as v', 'co.village_id', 'v.id')
-    .where('co.bridge_id', id);
-  return { ...bridge, communitiesServed };
+    .where('co.bridge_id', id)
+    .select('v.*');
+  return { ...bridge, communities_served };
 }
 
-//updates bridge using given id
-async function update(id, changes) {
-  return await db('bridges').where({ id }).update(changes).returning('*');
+function update(id, changes) {
+  return db('bridges').where({ id }).update(changes).returning('*');
 }
 
 //removes bridge using given id
