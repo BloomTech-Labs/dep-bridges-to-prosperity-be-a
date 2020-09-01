@@ -23,7 +23,7 @@ const swaggerUIOptions = {
 const indexRouter = require('./index/indexRouter');
 const profileRouter = require('./profile/profileRouter');
 const bridgeRouter = require('./bridges/bridgeRouter');
-const villageRouter = require('./villages/villageRoutes');
+const villageRouter = require('./villages/villageRouter');
 
 const dsRouter = require('./dsService/dsRouter');
 
