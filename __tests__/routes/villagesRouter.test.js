@@ -1,32 +1,28 @@
-const request = require('supertest');
-const express = require('express');
 const Villages = require('../../api/villages/villageModel');
-const villageRoute = require('../../api/villages/villageRouter');
-// const Bridges = require('../../api/bridges/bridgeModal');
-// const bridgeRouter = require('../../api/bridges/bridgeRouter');
-//cleaner
-const server = express();
-server.use(express.json());
-server.use('/', villageRoute);
+const db = require('../../data/db-config');
+const data = require('../villageDummyData');
 
-const newVillage = {
-  vill_id: 22301,
-  name: 'New Village',
-  prov_id: 5,
-  province: 'Amajyepfo',
-  dist_id: 22,
-  sect_id: 2205,
-  sector: 'Kigembe',
-  cell_id: 220501,
-  status: 'Rural',
-  fid: 1842,
-};
+beforeEach(() => {
+  return db.migrate
+    .rollback()
+    .then(() => db.migrate.latest())
+    .then(() => db.seed.run());
+});
 
-test('POST /add to be successful', async () => {
-  const mock = jest.spyOn(Villages, 'add');
-  mock.mockImplementation(() => Promise.resolve(newVillage));
-  const res = await request(server).post('/add').send(newVillage);
-  expect(res.status).toBe(201);
-  //console.log(res.status);
-  mock.mockRestore();
+test('POST / add village to database', async () => {
+  const newVillage = { ...data[0], vill_id: 1234, name: 'TEST_VILL' };
+
+  const villages = await Villages.add(newVillage);
+  expect(villages.vill_id).toBe(1234);
+});
+
+test('PATCH / Update village', async () => {
+  const villages = await Villages.update(1, { name: 'TEST' });
+
+  expect(villages[0].name).toBe('TEST');
+});
+test('DELETE / Delete village', async () => {
+  const villages = await Villages.remove(1);
+
+  expect(villages).toBe(1);
 });
