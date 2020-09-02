@@ -30,8 +30,8 @@ function validateValues(req, res, next) {
     name,
     type,
     stage,
-    subStage,
-    individualsDirectlyServed,
+    sub_stage,
+    individuals_directly_served,
     span,
     latitude,
     longitude,
@@ -41,8 +41,8 @@ function validateValues(req, res, next) {
     !name ||
     !type ||
     !stage ||
-    !subStage ||
-    !typeof individualsDirectlyServed === 'number' ||
+    !sub_stage ||
+    !typeof individuals_directly_served === 'number' ||
     !typeof span === 'number' ||
     !latitude ||
     !longitude
