@@ -89,7 +89,8 @@ async function fetchBridges() {
       .catch((err) => console.log('error', err.message));
     //Looping over the communities array from villages
     //return the object with that village name if it matches
-    commArray.forEach(async (villageName) => {
+    const newArray = commArray.filter((arr) => arr !== null);
+    newArray.forEach(async (villageName) => {
       try {
         const village = await db('villages')
           .where({ name: villageName })
