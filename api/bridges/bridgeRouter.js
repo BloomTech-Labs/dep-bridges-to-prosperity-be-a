@@ -69,7 +69,6 @@ const db = require('../../data/db-config');
 route.get('/all', (req, res) => {
   Bridges.find()
     .then((bridges) => {
-      console.log('length ', bridges.length);
       res.status(200).json(bridges);
     })
     .catch((err) => {
@@ -77,6 +76,38 @@ route.get('/all', (req, res) => {
     });
 });
 
+route.get('/paginate', async (req, res) => {
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit);
+
+  const result = {};
+
+  const bridges = await Bridges.find();
+  const starts = (page - 1) * limit;
+  const ends = page * limit;
+  const maxPage = Math.floor(bridges.length / limit);
+
+  if (ends < bridges.length) {
+    result.next = {
+      page: page + 1,
+      limit: limit,
+    };
+  }
+
+  if (starts > 0) {
+    result.previous = {
+      page: page - 1,
+      limit: limit,
+    };
+  }
+
+  if (page > maxPage) {
+    res.status(500).json({ errorMessage: 'Page does not exsist' });
+  }
+
+  result.paginatedBridges = bridges.slice(starts, ends);
+  res.status(200).json(result);
+});
 /**
  * @swagger
  * components:
