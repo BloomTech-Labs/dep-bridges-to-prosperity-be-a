@@ -85,7 +85,7 @@ route.get('/paginate', async (req, res) => {
   const bridges = await Bridges.find();
   const starts = (page - 1) * limit;
   const ends = page * limit;
-  const maxPage = Math.floor(bridges.length / limit);
+  const maxPage = Math.ceil(bridges.length / limit);
 
   if (ends < bridges.length) {
     result.next = {
