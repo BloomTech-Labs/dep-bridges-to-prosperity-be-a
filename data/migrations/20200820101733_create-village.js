@@ -15,20 +15,14 @@ exports.up = function (knex) {
     })
     .createTable('communities_served', (table) => {
       table.increments();
-      table
-        .integer('bridge_id')
-        .unsigned()
-        .notNullable()
-        .references('bridges.id')
-        .onUpdate('CASCADE')
-        .onDelete('CASCADE');
-      table
-        .integer('village_id')
-        .unsigned()
-        .notNullable()
-        .references('villages.id')
-        .onUpdate('CASCADE')
-        .onDelete('CASCADE');
+      table.integer('bridge_id').unsigned().notNullable();
+      //   .references('bridges.id')
+      //   .onUpdate('CASCADE')
+      //   .onDelete('CASCADE');
+      table.integer('village_id').unsigned().notNullable();
+      //   .references('villages.id')
+      //   .onUpdate('CASCADE')
+      //   .onDelete('CASCADE');
     });
 };
 

@@ -15,6 +15,7 @@
     "knex": "npx knex --knexfile config/knexfile.js",
     "knex-refresh": "npx knex migrate:latest && npx knex migrate:latest && npx knex seed:run",
     "tests": "npx jest --forceExit",
+    "test": "cross-env NODE_ENV=test jest --watch --verbose -runInBand",
     "coverage": "CI=true npx jest --coverage --detectOpenHandles --forceExit"
   },
   "jest": {

@@ -16,14 +16,15 @@ async function add(bridge) {
 //returns all communities served by a bridge. Using bridge id
 async function find() {
   let bridges = await db('bridges');
-  return Promise.all(
-    bridges.map(async (bridge) => ({
-      ...bridge,
-      communities_served: await db('communities_served as c')
-        .where({ 'c.bridge_id': bridge.id })
-        .join('villages as v', 'c.village_id', 'v.id'),
-    }))
-  );
+  //   return Promise.all(
+  //     bridges.map(async (bridge) => ({
+  //       ...bridge,
+  //       communities_served: await db('communities_served as c')
+  //         .where({ 'c.bridge_id': bridge.id })
+  //         .join('villages as v', 'c.village_id', 'v.id'),
+  //     }))
+  //   );
+  return bridges;
 }
 
 //find using filter

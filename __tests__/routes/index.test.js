@@ -1,6 +1,15 @@
 const request = require('supertest');
 // Full app so we can test the 404
+const db = require('../../data/db-config');
+
 const server = require('../../api/app.js');
+
+beforeAll(() => {
+  return db.migrate
+    .rollback()
+    .then(() => db.migrate.latest())
+    .then(() => db.seed.run());
+});
 
 describe('index router endpoints', () => {
   beforeAll(() => {});
