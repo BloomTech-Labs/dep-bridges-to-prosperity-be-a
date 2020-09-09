@@ -1,10 +1,14 @@
 const express = require('express');
+const redis = require('redis');
 const authRequired = require('../middleware/authRequired');
 const Bridges = require('./bridgeModal');
 const { validateId, validateValues } = require('../middleware/authMiddleware');
 
 const route = express.Router();
 const db = require('../../data/db-config');
+const { find } = require('./bridgeModal');
+
+const client = redis.createClient(process.env.REDIS_URL);
 
 /**
  * @swagger
@@ -66,15 +70,32 @@ const db = require('../../data/db-config');
  *      500:
  *        $ref: '#/components/responses/InternalSeverError'
  */
+
 route.get('/all', (req, res) => {
-  Bridges.find()
-    .then((bridges) => {
-      res.status(200).json(bridges);
-    })
-    .catch((err) => {
-      res.status(500).json(err.message);
-    });
+  // check if data is in cache
+  client.get('bridges', (err, data) => {
+    if (err) {
+      res.status(500).json({ errorMessage: 'There was an error ', error: err });
+    }
+    // if it is in chache then send it
+    if (data !== null) {
+      let getBridges = JSON.parse(data);
+      res.status(200).json(getBridges);
+    } else {
+      // otherwise add it
+      Bridges.find()
+        .then((bridges) => {
+          res.status(200).json(bridges);
+          client.set('bridges', JSON.stringify(bridges));
+        })
+        .catch((err) => {
+          res.status(500).json(err.message);
+        });
+    }
+  });
 });
+
+//1424,
 
 route.get('/paginate', async (req, res) => {
   const page = Number(req.query.page);
@@ -256,9 +277,14 @@ route.post('/search', async (req, res) => {
  */
 route.post('/add', validateValues, authRequired, async (req, res) => {
   const body = req.body;
+  // delete cache to add new bridge
+  client.del('bridges');
   try {
     const newBridge = await Bridges.add(body);
+    const bridges = await find();
     res.status(201).json(newBridge);
+    // add new data to cache
+    client.set('bridges', JSON.stringify(bridges));
   } catch (err) {
     res.status(400).json({
       message: err.message,
@@ -402,16 +428,20 @@ route.patch('/:id', validateId, authRequired, async (req, res) => {
  *      404:
  *        description: 'Bridge not found'
  */
-route.delete('/:id', validateId, authRequired, (req, res) => {
+route.delete('/:id', validateId, authRequired, async (req, res) => {
   const id = req.params.id;
+  client.del('bridges');
 
-  Bridges.remove(id)
-    .then(() => {
-      res.status(200).json({ message: 'Bridge Deleted' });
-    })
-    .catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+  try {
+    const deleteBridge = await Bridges.remove(id);
+    const bridges = await Bridges.find();
+    res
+      .status(200)
+      .json({ message: 'Bridge Deleted', bridgesDeleted: deleteBridge });
+    client.set('bridges', JSON.stringify(bridges));
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = route;
