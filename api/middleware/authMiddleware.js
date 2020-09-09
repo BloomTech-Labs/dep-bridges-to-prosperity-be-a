@@ -3,6 +3,7 @@ const Bridge = require('../bridges/bridgeModal');
 module.exports = {
   validateId,
   validateValues,
+  validateFilterValues,
 };
 // middleware to check if id is valid
 function validateId(req, res, next) {
@@ -48,6 +49,17 @@ function validateValues(req, res, next) {
     !longitude
   ) {
     res.status(400).json({ message: 'Please fill in all fields' });
+  } else {
+    next();
+  }
+}
+
+// middleware to validate filter values
+
+function validateFilterValues(req, res, next) {
+  const body = req.body;
+  if (Object.keys(body).length === 0) {
+    res.status(500).json({ errorMessage: 'Please provide value to filter' });
   } else {
     next();
   }
