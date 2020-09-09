@@ -170,22 +170,54 @@ route.get('/paginate', async (req, res) => {
  */
 route.post('/search', async (req, res) => {
   const search = req.body.search.toLowerCase();
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit);
+  const result = {};
+  const end = page * limit;
+  const starts = (page - 1) * limit;
+
   try {
     const bridges = await db('bridges')
       .select('*')
       .whereRaw(`LOWER(name) LIKE ?`, [`%${search}%`]);
-    res.status(200).json(bridges);
+    const maxPage = Math.ceil(bridges.length / limit);
+
+    if (end < bridges.length) {
+      result.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    if (starts > 0) {
+      result.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+
+    // if no results were found then  send and eror message
+    if (bridges.length === 0) {
+      return res
+        .status(404)
+        .json({ errorMessage: `Bridge not found with the name of ${search}` });
+    }
+
+    // if user tries to access a page that doesn't exisit then send and error
+    if (page > maxPage) {
+      return res.status(500).json({ errorMessage: 'Page does not exist.' });
+    }
+
+    // if there is 20 or less bridges then set next value to zero and send bridges
+    if (bridges.length <= 20) {
+      (result.next = 0), (result.paginatedBridges = bridges);
+      res.status(200).json(result);
+    } else {
+      result.paginatedBridges = bridges.slice(starts, end);
+      res.status(200).json(result);
+    }
   } catch (err) {
     res.status(500).json(err.message);
   }
-
-  // Bridges.find()
-  //   .then((bridges) => {
-  //     res.status(200).json(bridges);
-  //   })
-  //   .catch((err) => {
-  //     res.status(500).json(err.message);
-  //   });
 });
 
 /**
