@@ -99,7 +99,66 @@ route.get('/all', (req, res) => {
   });
 });
 
-//1424,
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    Bridges:
+ *      type: object
+ *      required:
+ *        - id
+ *        - name
+ *        - stage
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: This is a foreign key (the okta user ID)
+ *        email:
+ *          type: string
+ *        name:
+ *          type: string
+ *        avatarUrl:
+ *          type: string
+ *          description: public url of profile avatar
+ *      example:
+ *        id: 23243222
+ *        name: 'Buzi'
+ *        type: 'Suspended'
+ *        stage: 'Rejected'
+ *        subStage: 'Technical'
+ *        individualsDirectlyServed: 0.0
+ *        span: 0.0
+ *        latitude: -2.42056
+ *        longitude: 28.9662
+ *
+ * /bridges/paginate?page={pageNumber}&limit={limitNumber}:
+ *  get:
+ *    description: Returns a paginated list of bridges
+ *    summary: Get paginated list of bridges
+ *    tags:
+ *      - bridge
+ *    responses:
+ *      200:
+ *        description: array of bridges
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Bridges'
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
+ *      500:
+ *        $ref: '#/components/responses/InternalSeverError'
+ */
 
 route.get('/paginate', async (req, res) => {
   const page = Number(req.query.page);
@@ -133,6 +192,7 @@ route.get('/paginate', async (req, res) => {
   result.paginatedBridges = bridges.slice(starts, ends);
   res.status(200).json(result);
 });
+
 /**
  * @swagger
  * components:
@@ -155,25 +215,23 @@ route.get('/paginate', async (req, res) => {
  *          type: string
  *          description: public url of profile avatar
  *      example:
- *        id: 23243222
- *        name: 'Buzi'
- *        type: 'Suspended'
- *        stage: 'Rejected'
- *        subStage: 'Technical'
- *        individualsDirectlyServed: 0.0
- *        span: 0.0
- *        latitude: -2.42056
- *        longitude: 28.9662
+ *        search: 'Buzi'
  *
- * /bridges/search:
- *  get:
+ * /bridges/search/paginate?page={pageNumber}&limit={limitNumber}:
+ *  post:
  *    description: Returns a list of bridges
  *    summary: Searches through the list of all bridges
  *    tags:
  *      - bridge
+ *    requestBody:
+ *      description: value require to search bridge
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Bridges'
  *    responses:
  *      200:
- *        description: array of bridges
+ *        description: returns paginated bridges data if multiple found.
  *        content:
  *          application/json:
  *            schema:
@@ -244,6 +302,65 @@ route.post('/search', async (req, res) => {
     res.status(500).json(err.message);
   }
 });
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    Bridges:
+ *      type: object
+ *      required:
+ *        - id
+ *        - name
+ *        - stage
+ *      properties:
+ *        id:
+ *          type: string
+ *          description: This is a foreign key (the okta user ID)
+ *        email:
+ *          type: string
+ *        name:
+ *          type: string
+ *        avatarUrl:
+ *          type: string
+ *          description: public url of profile avatar
+ *      example:
+ *        country: 'Rwanda'
+ *
+ * /bridges/filter?page={pageNumber}&limit={limitNumber}:
+ *  post:
+ *    description: Returns a list of bridges
+ *    summary: filters bridge data by name, province, country, etc.
+ *    tags:
+ *      - bridge
+ *    requestBody:
+ *      description: value require to filter bridges
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Bridges'
+ *    responses:
+ *      200:
+ *        description: returns paginated bridges data if multiple found.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: array
+ *              items:
+ *                $ref: '#/components/schemas/Bridges'
+ *              example:
+ *                - id: 23243222
+ *                  name: 'Buzi'
+ *                  type: 'Suspended'
+ *                  stage: 'Rejected'
+ *                  subStage: 'Technical'
+ *                  individualsDirectlyServed: 0
+ *                  span: 0.0
+ *                  latitude: -2.42056
+ *                  longitude: 28.9662
+ *      500:
+ *        $ref: '#/components/responses/InternalSeverError'
+ */
 
 route.post('/filter', validateFilterValues, async (req, res) => {
   const body = req.body;
