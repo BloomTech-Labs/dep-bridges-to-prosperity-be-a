@@ -10,7 +10,6 @@ const {
 
 const route = express.Router();
 const db = require('../../data/db-config');
-const { find } = require('./bridgeModal');
 
 const client = redis.createClient(process.env.REDIS_URL);
 
@@ -449,7 +448,7 @@ route.post('/add', validateValues, authRequired, async (req, res) => {
   client.del('bridges');
   try {
     const newBridge = await Bridges.add(body);
-    const bridges = await find();
+    const bridges = await Bridges.find();
     res.status(201).json(newBridge);
     // add new data to cache
     client.set('bridges', JSON.stringify(bridges));
@@ -552,10 +551,16 @@ route.get('/:id', validateId, (req, res) => {
 route.patch('/:id', validateId, authRequired, async (req, res) => {
   const id = req.params.id;
   const changes = req.body;
+
+  client.del('bridges');
+
   try {
     const editBridge = await Bridges.update(id, changes);
+    const bridges = await Bridges.find();
+
     if (!editBridge) res.status(404).json({ message: 'ID not found' });
-    res.status(201).json(editBridge[0]);
+    res.status(200).json(editBridge[0]);
+    client.set('bridges', JSON.stringify(bridges));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
